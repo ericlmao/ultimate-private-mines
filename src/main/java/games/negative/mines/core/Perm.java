@@ -1,4 +1,4 @@
-package games.negative.plugin.core;
+package games.negative.mines.core;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Perm extends Permission {
 
-    private static final String PREFIX = "plugin";
+    private static final String PREFIX = "upm";
 
     // Add permissions here
     //public static final Perm ADMIN = new Perm("admin"); // plugin.admin

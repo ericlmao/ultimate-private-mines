@@ -1,11 +1,11 @@
-package games.negative.plugin;
+package games.negative.mines;
 
 import games.negative.alumina.AluminaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class Plugin extends AluminaPlugin {
+public class UPMPlugin extends AluminaPlugin {
 
-    private static Plugin instance;
+    private static UPMPlugin instance;
 
     @Override
     public void load() {
@@ -27,7 +27,7 @@ public class Plugin extends AluminaPlugin {
      * @return The instance of the plugin.
      */
     @NotNull
-    public static Plugin instance() {
+    public static UPMPlugin instance() {
         return instance;
     }
 }
