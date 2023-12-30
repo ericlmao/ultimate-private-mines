@@ -1,6 +1,7 @@
 package games.negative.mines;
 
 import games.negative.alumina.AluminaPlugin;
+import games.negative.mines.core.Locale;
 import org.jetbrains.annotations.NotNull;
 
 public class UPMPlugin extends AluminaPlugin {
@@ -14,7 +15,7 @@ public class UPMPlugin extends AluminaPlugin {
 
     @Override
     public void enable() {
-
+        Locale.init(this);
     }
 
     @Override
