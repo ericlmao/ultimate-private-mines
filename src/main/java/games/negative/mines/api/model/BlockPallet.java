@@ -13,6 +13,6 @@ public interface BlockPallet extends Keyd<String> {
     double getEntry(@NotNull Material material);
 
     @NotNull
-    Map<Material, Double> getPallet();
+    Map<Material, Double> pallet();
 
 }
