@@ -15,7 +15,7 @@ public class UPMPlugin extends AluminaPlugin {
     @Override
     public void load() {
         instance = this;
-        this.api = new UltimatePrivateMinesAPI();
+        this.api = new UltimatePrivateMinesAPI(this);
     }
 
     @Override
@@ -35,5 +35,19 @@ public class UPMPlugin extends AluminaPlugin {
     @NotNull
     public static UPMPlugin instance() {
         return instance;
+    }
+
+    /**
+     * Returns the API of the plugin.
+     * @return The API of the plugin.
+     */
+    @NotNull
+    public MinesAPI api() {
+        return api;
+    }
+
+    @NotNull
+    public static MinesAPI getApi() {
+        return instance.api();
     }
 }
