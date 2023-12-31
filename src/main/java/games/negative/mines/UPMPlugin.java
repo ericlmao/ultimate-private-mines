@@ -1,16 +1,21 @@
 package games.negative.mines;
 
 import games.negative.alumina.AluminaPlugin;
+import games.negative.mines.api.MinesAPI;
 import games.negative.mines.core.Locale;
+import games.negative.mines.core.provider.UltimatePrivateMinesAPI;
 import org.jetbrains.annotations.NotNull;
 
 public class UPMPlugin extends AluminaPlugin {
 
     private static UPMPlugin instance;
 
+    private MinesAPI api;
+
     @Override
     public void load() {
         instance = this;
+        this.api = new UltimatePrivateMinesAPI();
     }
 
     @Override
