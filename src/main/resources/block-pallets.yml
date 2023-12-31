@@ -1,0 +1,19 @@
+STONE: # /pallet give <username> stone
+  COBBLESTONE: 10 # 10% chance
+  ANDESITE: 10 # 10% chance
+  DIORITE: 10 # 10% chance
+  GRANITE: 10 # 10% chance
+  DEEPSLATE: 10 # 10% chance
+  STONE: 50 # 50% chance
+
+STAINED_CLAY: # /pallet give <username> stained_clay
+  BLACK_TERRACOTTA: 10 # 10% chance
+  BLUE_TERRACOTTA: 10 # 10% chance
+  BROWN_TERRACOTTA: 10 # 10% chance
+  CYAN_TERRACOTTA: 10 # 10% chance
+  GRAY_TERRACOTTA: 10 # 10% chance
+  GREEN_TERRACOTTA: 10 # 10% chance
+  LIGHT_BLUE_TERRACOTTA: 10 # 10% chance
+  LIGHT_GRAY_TERRACOTTA: 10 # 10% chance
+  LIME_TERRACOTTA: 10 # 10% chance
+  MAGENTA_TERRACOTTA: 10 # 10% chance
