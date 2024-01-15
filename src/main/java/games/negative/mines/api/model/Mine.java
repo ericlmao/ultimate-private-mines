@@ -9,9 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +56,7 @@ public interface Mine extends Unique {
      *
      * @param name the new name for the Mine
      */
-    void setName(@NotNull String name);
+    void setName(@Nullable String name);
 
     /**
      * Retrieves the level of the Mine.
@@ -192,17 +191,12 @@ public interface Mine extends Unique {
     void setReady(boolean ready);
 
     /**
-     * Resets the Mine to its initial state.
-     */
-    void reset();
-
-    /**
      * Retrieves the pallet for the Mine.
      *
      * @return The BlockPallet for the Mine.
      */
     @NotNull
-    BlockPallet getPallet();
+    String getPallet();
 
     /**
      *
@@ -210,7 +204,7 @@ public interface Mine extends Unique {
      *
      * @param pallet The BlockPallet to set for the Mine.
      */
-    void setPallet(@NotNull BlockPallet pallet);
+    void setPallet(@NotNull String pallet);
 
     /**
      * Retrieves the timestamp of the last reset.
@@ -235,19 +229,4 @@ public interface Mine extends Unique {
      */
     @NotNull
     Instant getCreationTime();
-
-    /**
-     * Retrieves the file associated with this object.
-     *
-     * @return The associated file. Will never be null.
-     */
-    @NotNull
-    File getFile();
-
-    /**
-     * Saves the data to a file.
-     *
-     * @throws IOException if there is an error while saving the data.
-     */
-    void save() throws IOException;
 }
