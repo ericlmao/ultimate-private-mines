@@ -6,15 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface BlockPallets {
+public interface BlockPalletManager {
 
     Optional<BlockPallet> getPallet(@NotNull String key);
 
-    void addPallet(@NotNull BlockPallet pallet);
-
-    void removePallet(@NotNull String key);
-
-    @NotNull
-    Collection<BlockPallet> pallets();
+    Collection<BlockPallet> getPallets();
 
 }

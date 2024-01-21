@@ -1,0 +1,32 @@
+world: "world"
+invitation-duration: 60
+grid-size: 100000
+distance-between: 1000
+schematics:
+  DEFAULT:
+    default: true # The default schematic used by everyone!
+    file: "default.schem" # Must be located in the schematics' directory!
+    border-size: 200 # The size of the border around the center of the schematic (paste point)
+    paste: # Schematic paste specifications
+      paste-y: 60 # The y-level of which the paste will take place
+      mine-region-relative: # The region of the mine relative to the paste point
+        min-x: 10
+        min-y: 0
+        min-z: 10
+        max-x: -10
+        max-y: -25
+        max-z: -10
+      mine-spawn-relative: # The spawn point of the mine relative to the paste point
+        x: 0
+        y: 0
+        z: 0
+        yaw: 0
+        pitch: 0
+
+    icon:
+      display-name: "&aDefault Mine"
+      material: "GRASS_BLOCK"
+      lore:
+        - "&7This is the default mine!"
+        - "&7It's a great place to start!"
+

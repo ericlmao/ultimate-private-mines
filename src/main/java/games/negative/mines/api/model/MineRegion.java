@@ -1,69 +1,67 @@
 package games.negative.mines.api.model;
 
-import com.google.common.collect.Lists;
-import games.negative.mines.api.model.position.Position;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import lombok.Builder;
+import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.stylesheets.LinkStyle;
 
-import java.util.List;
-import java.util.function.Predicate;
+@Data
+public class MineRegion {
 
-public interface MineRegion {
+    @Expose
+    @SerializedName("world")
+    private final World world;
 
-    @NotNull
-    World world();
+    @Expose
+    @SerializedName("min-x")
+    private int minX;
 
-    @NotNull
-    Position getMinimum();
+    @Expose
+    @SerializedName("min-y")
+    private int minY;
 
-    @NotNull
-    Position getMaximum();
+    @Expose
+    @SerializedName("min-z")
+    private int minZ;
 
-    void increase(int x, int y, int z);
+    @Expose
+    @SerializedName("max-x")
+    private int maxX;
 
-    default boolean contains(@NotNull Location location) {
-        World world = location.getWorld();
-        if (world == null) return false;
+    @Expose
+    @SerializedName("max-y")
+    private int maxY;
 
-        Position minimum = getMinimum();
-        Position maximum = getMaximum();
+    @Expose
+    @SerializedName("max-z")
+    private int maxZ;
 
-        return world.equals(world()) &&
-                location.getX() >= minimum.x() && location.getX() <= maximum.x() &&
-                location.getY() >= minimum.y() && location.getY() <= maximum.y() &&
-                location.getZ() >= minimum.z() && location.getZ() <= maximum.z();
-    }
-
-    default List<Block> getBlocks(@Nullable Predicate<Block> filter) {
-        Location minimum = new Location(world(), getMinimum().x(), getMinimum().y(), getMinimum().z());
-        Location maximum = new Location(world(), getMaximum().x(), getMaximum().y(), getMaximum().z());
-
-        List<Block> blocks = Lists.newArrayList();
-
-        for (int x = minimum.getBlockX(); x <= maximum.getBlockX(); x++) {
-            for (int y = minimum.getBlockY(); y <= maximum.getBlockY(); y++) {
-                for (int z = minimum.getBlockZ(); z <= maximum.getBlockZ(); z++) {
-                    Block block = world().getBlockAt(x, y, z);
-                    if (filter != null && !filter.test(block)) continue;
-
-                    blocks.add(block);
-                }
-            }
-        }
-
-        return blocks;
+    public MineRegion(@NotNull World world, @NotNull Block min, @NotNull Block max) {
+        this.world = world;
+        this.minX = min.getX();
+        this.minY = min.getY();
+        this.minZ = min.getZ();
+        this.maxX = max.getX();
+        this.maxY = max.getY();
+        this.maxZ = max.getZ();
     }
 
     @NotNull
-    default Block getCenter() {
-        Position minimum = getMinimum();
-        Position maximum = getMaximum();
-
-        return world().getBlockAt((minimum.x() + maximum.x()) / 2, (minimum.y() + maximum.y()) / 2, (minimum.z() + maximum.z()) / 2);
+    public Block getCenter() {
+        return world.getBlockAt((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
     }
 
+    public void increase(int x, int y, int z) {
+        this.maxX += x;
+        this.maxY += y;
+        this.maxZ += z;
+
+        this.minX -= x;
+        this.minY -= y;
+        this.minZ -= z;
+    }
 }

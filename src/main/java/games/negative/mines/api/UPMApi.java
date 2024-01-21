@@ -2,9 +2,9 @@ package games.negative.mines.api;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface MinesAPI {
+public interface UPMApi {
 
     @NotNull
-    BlockPallets getBlockPallets();
+    MineManager mines();
 
 }
