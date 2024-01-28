@@ -60,6 +60,8 @@ public class MinePasteTask extends BukkitRunnable {
                         .createPaste(session)
                         .to(paste)
                         .ignoreAirBlocks(true)
+                        .copyBiomes(true)
+                        .copyEntities(false)
                         .build();
 
                 try {
