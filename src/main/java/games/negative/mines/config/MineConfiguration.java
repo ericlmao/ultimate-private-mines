@@ -1,6 +1,5 @@
 package games.negative.mines.config;
 
-import games.negative.mines.api.model.BlockPallet;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -12,10 +11,6 @@ public class MineConfiguration extends UPMConfiguration {
     // Mine World for generating mines
     @Getter
     private static World world;
-
-    // Default block pallet for mines
-    @Getter
-    private static String blockPallet;
 
     // Invitation duration in seconds
     @Getter
@@ -43,9 +38,6 @@ public class MineConfiguration extends UPMConfiguration {
         String worldRaw = config.getString("world", "world");
         world = Bukkit.getWorld(worldRaw);
         if (world == null) throw new IllegalStateException("World " + worldRaw + " not found (mines.yml)");
-
-        blockPallet = config.getString("block-pallet");
-        if (blockPallet == null) throw new IllegalStateException("Default Block pallet not found (mines.yml)");
 
         inviteDuration = config.getInt("invitation-duration", 60);
 

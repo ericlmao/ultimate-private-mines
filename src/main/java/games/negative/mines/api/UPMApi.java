@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 public interface UPMApi {
 
     @NotNull
+    BlockPalletManager pallets();
+
+    @NotNull
     MineManager mines();
 
 }

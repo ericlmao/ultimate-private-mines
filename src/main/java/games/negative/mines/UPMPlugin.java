@@ -3,7 +3,11 @@ package games.negative.mines;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import games.negative.alumina.AluminaPlugin;
+import games.negative.alumina.command.builder.CommandBuilder;
+import games.negative.mines.api.MineManager;
 import games.negative.mines.api.UPMApi;
+import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.command.CommandMine;
 import games.negative.mines.config.BlockPalletConfiguration;
 import games.negative.mines.config.MineConfiguration;
 import games.negative.mines.core.Locale;
@@ -41,11 +45,22 @@ public class UPMPlugin extends AluminaPlugin {
         // ------------------------
 
         this.api = new UltimatePrivateMinesAPI(this);
+
+        registerCommand(
+                new CommandBuilder(new CommandMine(this))
+                        .name("mine")
+                        .aliases("pmine", "privatemine")
+                        .description("Main command for Ultimate Private Mines.")
+                        .playerOnly()
+        );
     }
 
     @Override
     public void disable() {
-
+        MineManager mines = api.mines();
+        for (PrivateMine mine : mines.getMines()) {
+            mines.saveSync(mine);
+        }
     }
 
     /**

@@ -5,12 +5,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
+import games.negative.alumina.builder.ItemBuilder;
 import games.negative.alumina.event.Events;
 import games.negative.alumina.future.BukkitCompletableFuture;
 import games.negative.alumina.future.BukkitFuture;
 import games.negative.alumina.util.NBTEditor;
 import games.negative.alumina.util.Tasks;
 import games.negative.mines.UPMPlugin;
+import games.negative.mines.api.BlockPalletManager;
 import games.negative.mines.api.MineManager;
 import games.negative.mines.api.event.ConfigurationReloadEvent;
 import games.negative.mines.api.model.MineRegion;
@@ -20,15 +22,18 @@ import games.negative.mines.api.model.schematic.PasteSpecifications;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import games.negative.mines.config.MineConfiguration;
 import games.negative.mines.core.structure.UPMMine;
+import games.negative.mines.core.structure.UPMPasteSpecifications;
+import games.negative.mines.core.structure.UPMSchematic;
 import games.negative.mines.core.util.MineLoader;
 import games.negative.mines.task.MinePasteTask;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,11 +57,17 @@ public class UPMMineManagerProvider implements MineManager {
     private final NamespacedKey GRID_X;
     private final NamespacedKey GRID_Z;
 
-    public UPMMineManagerProvider(@NotNull UPMPlugin plugin) {
+    private final BlockPalletManager pallets;
+
+    public UPMMineManagerProvider(@NotNull UPMPlugin plugin, @NotNull BlockPalletManager pallets) {
         this.plugin = plugin;
+        this.pallets = pallets;
+
+        this.schematics = Sets.newHashSet();
+        loadSchematics();
 
         this.mines = MineLoader.loadMines(plugin);
-        mines.values().forEach(privateMine -> privateMine.onInitialization(plugin));
+        mines.values().forEach(privateMine -> privateMine.onInitialization(plugin, pallets, this));
 
         this.cache = CacheBuilder.newBuilder().expireAfterWrite(Duration.of(30, ChronoUnit.SECONDS))
                 .build(new CacheLoader<>() {
@@ -67,27 +78,11 @@ public class UPMMineManagerProvider implements MineManager {
 
                             return mine;
                         }
-                        throw new NullPointerException("No mine found for UUID " + key);
+                        throw new Exception("No mine found for UUID " + key);
                     }
                 });
 
-        // Debug for local cache
         Logger logger = plugin.getLogger();
-        Tasks.run(() -> {
-            StringBuilder builder = new StringBuilder();
-            builder.append("Local Mine Cache:").append("\n");
-            for (Map.Entry<UUID, PrivateMine> entry : cache.asMap().entrySet()) {
-                builder.append("UUID: ").append(entry.getKey()).append(" Mine: ").append(entry.getValue().getName()).append("\n");
-            }
-
-            logger.info(builder.toString());
-        }, 20 * 10, 20);
-//        for (PrivateMine mine : mines.values()) {
-//
-//            for (UUID uuid : mine.members()) {
-//                cache.put(uuid, mine);
-//            }
-//        }
 
         this.world = MineConfiguration.getWorld();
 
@@ -104,8 +99,43 @@ public class UPMMineManagerProvider implements MineManager {
             logger.info("Created GRID_Z key for world " + world.getName());
         }
 
-        this.schematics = Sets.newHashSet();
-        loadSchematics();
+        Events.listen(PlayerTeleportEvent.class, event -> {
+            if (event.getCause() != PlayerTeleportEvent.TeleportCause.PLUGIN || event.getTo() == null) return;
+
+            Player player = event.getPlayer();
+
+            Location to = event.getTo();
+
+            World toWorld = to.getWorld();
+            if (toWorld == null || !toWorld.equals(world)) {
+                player.setWorldBorder(null);
+                return;
+            }
+
+            for (PrivateMine mine : getMines()) {
+                WorldBorder border = mine.border();
+                if (!border.isInside(to)) continue;
+
+                player.setWorldBorder(border);
+                break;
+            }
+        });
+
+        Events.listen(PlayerJoinEvent.class, event -> {
+            Player player = event.getPlayer();
+            Location location = player.getLocation();
+
+            World world = location.getWorld();
+            if (world == null || !world.equals(this.world)) return;
+
+            for (PrivateMine mine : getMines()) {
+                WorldBorder border = mine.border();
+                if (!border.isInside(location)) continue;
+
+                Tasks.run(() -> player.setWorldBorder(border), 2);
+                break;
+            }
+        });
 
         Events.listen(ConfigurationReloadEvent.class, event -> {
             if (!(event.config() instanceof MineConfiguration)) return;
@@ -137,7 +167,49 @@ public class UPMMineManagerProvider implements MineManager {
             File file = new File(dir, fileName);
             Preconditions.checkArgument(file.exists(), "File " + fileName + " does not exist in schematic `" + key + "` (mines.yml)");
 
-            
+            int border = section.getInt("border-size", 200);
+
+            ConfigurationSection iconSection = section.getConfigurationSection("icon");
+            Preconditions.checkNotNull(iconSection, "'icon' cannot be null in schematic `" + key + "` (mines.yml)");
+
+            String display = iconSection.getString("display-name", "&a" + key);
+            Material material = Material.valueOf(iconSection.getString("material", "GRASS_BLOCK"));
+            List<String> lore = iconSection.getStringList("lore");
+
+            ItemStack icon = new ItemBuilder(material).setName(display).setLore(lore).build();
+
+            ConfigurationSection pasteSection = section.getConfigurationSection("paste");
+            Preconditions.checkNotNull(pasteSection, "'paste' cannot be null in schematic `" + key + "` (mines.yml)");
+
+            int pasteY = pasteSection.getInt("paste-y", 60);
+
+            ConfigurationSection regionSection = pasteSection.getConfigurationSection("mine-region-relative");
+            Preconditions.checkNotNull(regionSection, "'mine-region-relative' cannot be null in schematic `" + key + "` (mines.yml)");
+
+            int minX = regionSection.getInt("min-x");
+            int minY = regionSection.getInt("min-y");
+            int minZ = regionSection.getInt("min-z");
+            int maxX = regionSection.getInt("max-x");
+            int maxY = regionSection.getInt("max-y");
+            int maxZ = regionSection.getInt("max-z");
+
+            PasteSpecifications.MineLocationRelative min = new PasteSpecifications.MineLocationRelative(minX, minY, minZ);
+            PasteSpecifications.MineLocationRelative max = new PasteSpecifications.MineLocationRelative(maxX, maxY, maxZ);
+
+            ConfigurationSection spawnSection = pasteSection.getConfigurationSection("mine-spawn-relative");
+            Preconditions.checkNotNull(spawnSection, "'mine-spawn-relative' cannot be null in schematic `" + key + "` (mines.yml)");
+
+            int spawnX = spawnSection.getInt("x");
+            int spawnY = spawnSection.getInt("y");
+            int spawnZ = spawnSection.getInt("z");
+            float spawnYaw = (float) spawnSection.getDouble("yaw");
+            float spawnPitch = (float) spawnSection.getDouble("pitch");
+
+            PasteSpecifications.MinePositionRelative spawn = new PasteSpecifications.MinePositionRelative(spawnX, spawnY, spawnZ, spawnYaw, spawnPitch);
+
+            PasteSpecifications specifications = new UPMPasteSpecifications(pasteY, min, max, spawn);
+            PrivateMineSchematic schematic = new UPMSchematic(key, file, def, border, icon, specifications);
+            schematics.add(schematic);
         }
     }
 
@@ -161,13 +233,13 @@ public class UPMMineManagerProvider implements MineManager {
         int gridZ = NBTEditor.get(world, GRID_Z, PersistentDataType.INTEGER);
 
         // Calculate the next grid positions
-        int x = gridX + distance;
+        int x = gridX + range;
         int z = gridZ;
-        if (x > range){
+        if (x > distance){
             x = 0;
-            z += distance;
+            z += range;
 
-            if (z > range) throw new IllegalStateException("No more space for mines!");
+            if (z > distance) throw new IllegalStateException("No more space for mines!");
         }
 
         // Update grid positions in the world
@@ -192,10 +264,11 @@ public class UPMMineManagerProvider implements MineManager {
         PasteSpecifications.MinePositionRelative spawnRelative = specifications.spawnRelative();
         Block spawnBlock = pasteBlock.getRelative((int) spawnRelative.x(), (int) spawnRelative.y(), (int) spawnRelative.z());
 
-        Position spawn = new Position(world, spawnBlock.getX(), spawnBlock.getY(), spawnBlock.getZ(), spawnRelative.yaw(), spawnRelative.pitch());
+        Position spawn = new Position(world, spawnBlock.getX() + 0.5, spawnBlock.getY(), spawnBlock.getZ() + 0.5, spawnRelative.yaw(), spawnRelative.pitch());
 
-        PrivateMine mine = new UPMMine(unique, owner, region, spawn);
+        PrivateMine mine = new UPMMine(unique, owner, region, spawn, schematic);
         mine.setReady(false);
+        mine.onInitialization(plugin, pallets, this);
 
         mines.put(unique, mine);
 
@@ -236,8 +309,13 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
+    public void saveSync(@NotNull PrivateMine mine) {
+        MineLoader.saveMine(plugin, mine);
+    }
+
+    @Override
     public Optional<PrivateMineSchematic> getSchematic(@NotNull String key) {
-        return Optional.empty();
+        return schematics.stream().filter(schematic -> schematic.key().equalsIgnoreCase(key)).findFirst();
     }
 
     @Override
@@ -247,6 +325,6 @@ public class UPMMineManagerProvider implements MineManager {
 
     @Override
     public @NotNull Collection<PrivateMineSchematic> getSchematics() {
-        return null;
+        return schematics;
     }
 }

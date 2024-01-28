@@ -1,8 +1,8 @@
 package games.negative.mines.api.model;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import lombok.Builder;
 import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -63,5 +63,26 @@ public class MineRegion {
         this.minX -= x;
         this.minY -= y;
         this.minZ -= z;
+    }
+
+    @NotNull
+    public Location min() {
+        return new Location(world, minX, minY, minZ);
+    }
+
+    @NotNull
+    public Location max() {
+        return new Location(world, maxX, maxY, maxZ);
+    }
+
+    public boolean contains(double x, double y, double z) {
+        return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ;
+    }
+
+    public boolean contains(@NotNull Location location) {
+        World world = location.getWorld();
+        Preconditions.checkNotNull(world, "World cannot be null");
+
+        return (this.world.equals(world) && contains(location.getX(), location.getY(), location.getZ()));
     }
 }

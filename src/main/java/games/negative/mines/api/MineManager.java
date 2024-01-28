@@ -27,6 +27,8 @@ public interface MineManager {
 
     BukkitFuture<Void> save(@NotNull PrivateMine mine);
 
+    void saveSync(@NotNull PrivateMine mine);
+
     Optional<PrivateMineSchematic> getSchematic(@NotNull String key);
 
     @NotNull

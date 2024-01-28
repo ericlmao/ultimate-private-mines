@@ -12,16 +12,16 @@ public class BukkitWorldTypeAdapter extends TypeAdapter<World> {
 
     @Override
     public void write(JsonWriter out, World value) throws IOException {
-        out.name("world");
+//        out.name("world");
         out.value(value.getName());
     }
 
     @Override
     public World read(JsonReader in) throws IOException {
-        String next = in.nextName();
-        if (next == null) return null;
-
-        if (!next.equalsIgnoreCase("world")) return null;
+//        String next = in.nextName();
+//        if (next == null) return null;
+//
+//        if (!next.equalsIgnoreCase("world")) return null;
 
         return Bukkit.getWorld(in.nextString());
     }

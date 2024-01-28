@@ -6,4 +6,4 @@ api-version: 1.13
 load: POSTWORLD
 
 depend: ["FastAsyncWorldEdit"]
-softdepend: ["SuperVanish", "PremiumVanish"]
+softdepend: ["SuperVanish", "PremiumVanish", "Multiverse-Core"]

@@ -8,8 +8,6 @@ import games.negative.mines.api.BlockPalletManager;
 import games.negative.mines.api.event.ConfigurationReloadEvent;
 import games.negative.mines.api.model.BlockPallet;
 import games.negative.mines.config.BlockPalletConfiguration;
-import games.negative.mines.config.MineConfiguration;
-import games.negative.mines.core.structure.UPMBlockPallet;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -63,7 +61,7 @@ public class UPMBlockPalletManagerProvider implements BlockPalletManager {
                 pallet.put(material, entry);
             }
 
-            BlockPallet blockPallet = new UPMBlockPallet(key, permission, pallet, defaultPallet);
+            BlockPallet blockPallet = new BlockPallet(key, pallet, permission, defaultPallet);
             pallets.add(blockPallet);
         }
     }
