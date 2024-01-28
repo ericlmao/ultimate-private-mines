@@ -281,9 +281,6 @@ public class UPMMine implements PrivateMine {
     public void reset() {
         this.lastReset = Instant.now();
 
-        Location min = region.min();
-        Location max = region.max();
-
         List<Player> usersInMine = Bukkit.getOnlinePlayers().stream()
                 .filter(player -> region.contains(player.getLocation()))
                 .collect(Collectors.toList());
@@ -293,6 +290,9 @@ public class UPMMine implements PrivateMine {
         }
 
         Tasks.async(() -> {
+            Location min = region.min();
+            Location max = region.max();
+
             World world = BukkitAdapter.adapt(min.getWorld());
 
             BlockVector3 left = BlockVector3.at(min.getX(), min.getY(), min.getZ());
