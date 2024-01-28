@@ -3,7 +3,7 @@ package games.negative.mines.core.util;
 import com.google.common.collect.Maps;
 import games.negative.alumina.util.JsonUtil;
 import games.negative.mines.UPMPlugin;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.core.structure.UPMMine;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 public class MineLoader {
 
     @NotNull
-    public Map<UUID, PrivateMine> loadMines(@NotNull UPMPlugin plugin) {
-        Map<UUID, PrivateMine> mines = Maps.newHashMap();
+    public Map<UUID, Mine> loadMines(@NotNull UPMPlugin plugin) {
+        Map<UUID, Mine> mines = Maps.newHashMap();
 
         File dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists()) dataFolder.mkdirs();
@@ -35,7 +35,7 @@ public class MineLoader {
             File file = new File(directory, name);
             if (!file.exists()) continue;
 
-            PrivateMine mine = loadMine(file);
+            Mine mine = loadMine(file);
             if (mine == null) {
                 plugin.getLogger().severe("Failed to load mine " + name + "! Deleting file...");
                 file.delete();
@@ -49,7 +49,7 @@ public class MineLoader {
     }
 
     @Nullable
-    public PrivateMine loadMine(@NotNull File file) {
+    public Mine loadMine(@NotNull File file) {
         try {
             return JsonUtil.load(file, UPMMine.class, UPMPlugin.GSON);
         } catch (IOException e) {
@@ -57,7 +57,7 @@ public class MineLoader {
         }
     }
 
-    public void saveMine(@NotNull UPMPlugin plugin, @NotNull PrivateMine mine) {
+    public void saveMine(@NotNull UPMPlugin plugin, @NotNull Mine mine) {
         File dataFolder = plugin.getDataFolder();
         if (!dataFolder.exists()) dataFolder.mkdirs();
 

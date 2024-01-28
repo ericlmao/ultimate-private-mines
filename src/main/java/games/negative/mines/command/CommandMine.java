@@ -4,7 +4,7 @@ import games.negative.alumina.command.Command;
 import games.negative.alumina.command.Context;
 import games.negative.mines.UPMPlugin;
 import games.negative.mines.api.MineManager;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +29,9 @@ public class CommandMine implements Command {
             return;
         }
 
-        Optional<PrivateMine> existing = mines.getMine(player);
+        Optional<Mine> existing = mines.getMine(player);
         if (existing.isPresent()) {
-            PrivateMine mine = existing.get();
+            Mine mine = existing.get();
 
             boolean reset = context.argument(0).isPresent();
             if (reset) {

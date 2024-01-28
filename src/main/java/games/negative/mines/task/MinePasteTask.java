@@ -15,7 +15,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import games.negative.mines.UPMPlugin;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -30,7 +30,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class MinePasteTask extends BukkitRunnable {
 
-    private final PrivateMine mine;
+    private final Mine mine;
     private final Location location;
     private final PrivateMineSchematic schematic;
     private final UPMPlugin plugin;

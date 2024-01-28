@@ -1,7 +1,7 @@
 package games.negative.mines.api;
 
 import games.negative.alumina.future.BukkitFuture;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,25 +14,25 @@ import java.util.stream.Stream;
 public interface MineManager {
 
     @NotNull
-    PrivateMine create(@NotNull UUID owner, @NotNull PrivateMineSchematic schematic);
+    Mine create(@NotNull UUID owner, @NotNull PrivateMineSchematic schematic);
 
     @NotNull
-    Stream<PrivateMine> stream();
+    Stream<Mine> stream();
 
     @NotNull
-    Optional<PrivateMine> getMine(@NotNull UUID uuid);
+    Optional<Mine> getMine(@NotNull UUID uuid);
 
     @NotNull
-    Optional<PrivateMine> getMine(@NotNull Player player);
+    Optional<Mine> getMine(@NotNull Player player);
 
-    BukkitFuture<Void> save(@NotNull PrivateMine mine);
+    BukkitFuture<Void> save(@NotNull Mine mine);
 
-    void saveSync(@NotNull PrivateMine mine);
+    void saveSync(@NotNull Mine mine);
 
     Optional<PrivateMineSchematic> getSchematic(@NotNull String key);
 
     @NotNull
-    Collection<PrivateMine> getMines();
+    Collection<Mine> getMines();
 
     @NotNull
     Collection<PrivateMineSchematic> getSchematics();

@@ -17,7 +17,7 @@ import games.negative.mines.api.MineManager;
 import games.negative.mines.api.event.ConfigurationReloadEvent;
 import games.negative.mines.api.model.MineRegion;
 import games.negative.mines.api.model.Position;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.schematic.PasteSpecifications;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import games.negative.mines.config.MineConfiguration;
@@ -48,9 +48,9 @@ import java.util.stream.Stream;
 public class UPMMineManagerProvider implements MineManager {
 
     private final UPMPlugin plugin;
-    private final Map<UUID, PrivateMine> mines;
+    private final Map<UUID, Mine> mines;
     private final Set<PrivateMineSchematic> schematics;
-    private final LoadingCache<UUID, PrivateMine> cache;
+    private final LoadingCache<UUID, Mine> cache;
 
     private final World world;
 
@@ -72,8 +72,8 @@ public class UPMMineManagerProvider implements MineManager {
         this.cache = CacheBuilder.newBuilder().expireAfterWrite(Duration.of(30, ChronoUnit.SECONDS))
                 .build(new CacheLoader<>() {
                     @Override
-                    public @NotNull PrivateMine load(@NotNull UUID key) throws Exception {
-                        for (PrivateMine mine : mines.values()) {
+                    public @NotNull Mine load(@NotNull UUID key) throws Exception {
+                        for (Mine mine : mines.values()) {
                             if (!mine.isMember(key)) continue;
 
                             return mine;
@@ -112,7 +112,7 @@ public class UPMMineManagerProvider implements MineManager {
                 return;
             }
 
-            for (PrivateMine mine : getMines()) {
+            for (Mine mine : getMines()) {
                 WorldBorder border = mine.border();
                 if (!border.isInside(to)) continue;
 
@@ -128,7 +128,7 @@ public class UPMMineManagerProvider implements MineManager {
             World world = location.getWorld();
             if (world == null || !world.equals(this.world)) return;
 
-            for (PrivateMine mine : getMines()) {
+            for (Mine mine : getMines()) {
                 WorldBorder border = mine.border();
                 if (!border.isInside(location)) continue;
 
@@ -214,8 +214,8 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
-    public @NotNull PrivateMine create(@NotNull UUID owner, @NotNull PrivateMineSchematic schematic) {
-        for (PrivateMine search : mines.values()) {
+    public @NotNull Mine create(@NotNull UUID owner, @NotNull PrivateMineSchematic schematic) {
+        for (Mine search : mines.values()) {
             if (search.isMember(owner)) throw new IllegalStateException("Player " + owner + " already has a mine or is a member of one");
         }
 
@@ -266,7 +266,7 @@ public class UPMMineManagerProvider implements MineManager {
 
         Position spawn = new Position(world, spawnBlock.getX() + 0.5, spawnBlock.getY(), spawnBlock.getZ() + 0.5, spawnRelative.yaw(), spawnRelative.pitch());
 
-        PrivateMine mine = new UPMMine(unique, owner, region, spawn, schematic);
+        Mine mine = new UPMMine(unique, owner, region, spawn, schematic);
         mine.setReady(false);
         mine.onInitialization(plugin, pallets, this);
 
@@ -278,20 +278,20 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
-    public @NotNull Stream<PrivateMine> stream() {
+    public @NotNull Stream<Mine> stream() {
         return mines.values().stream();
     }
 
     @Override
-    public @NotNull Optional<PrivateMine> getMine(@NotNull UUID uuid) {
+    public @NotNull Optional<Mine> getMine(@NotNull UUID uuid) {
         return Optional.ofNullable(mines.get(uuid));
     }
 
     @Override
-    public @NotNull Optional<PrivateMine> getMine(@NotNull Player player) {
+    public @NotNull Optional<Mine> getMine(@NotNull Player player) {
         try {
-            PrivateMine privateMine = cache.get(player.getUniqueId());
-            return Optional.of(privateMine);
+            Mine mine = cache.get(player.getUniqueId());
+            return Optional.of(mine);
         } catch (ExecutionException e) {
             plugin.getLogger().severe("Failed to get mine for player " + player.getName());
             return Optional.empty();
@@ -299,7 +299,7 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
-    public BukkitFuture<Void> save(@NotNull PrivateMine mine) {
+    public BukkitFuture<Void> save(@NotNull Mine mine) {
         BukkitFuture<Void> future = new BukkitCompletableFuture<>();
         future.supplyAsync(() -> {
             MineLoader.saveMine(plugin, mine);
@@ -309,7 +309,7 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
-    public void saveSync(@NotNull PrivateMine mine) {
+    public void saveSync(@NotNull Mine mine) {
         MineLoader.saveMine(plugin, mine);
     }
 
@@ -319,7 +319,7 @@ public class UPMMineManagerProvider implements MineManager {
     }
 
     @Override
-    public @NotNull Collection<PrivateMine> getMines() {
+    public @NotNull Collection<Mine> getMines() {
         return mines.values();
     }
 

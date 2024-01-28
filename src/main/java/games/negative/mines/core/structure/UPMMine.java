@@ -37,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
-public class UPMMine implements PrivateMine {
+public class UPMMine implements Mine {
 
     @Expose
     @SerializedName("uuid")

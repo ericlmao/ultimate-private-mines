@@ -1,7 +1,7 @@
 package games.negative.mines.task;
 
 import games.negative.alumina.util.TimeUtil;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class MinePasteEndTask extends BukkitRunnable {
 
-    private final PrivateMine mine;
+    private final Mine mine;
     private final Duration total;
 
     @Override

@@ -6,7 +6,7 @@ import games.negative.alumina.AluminaPlugin;
 import games.negative.alumina.command.builder.CommandBuilder;
 import games.negative.mines.api.MineManager;
 import games.negative.mines.api.UPMApi;
-import games.negative.mines.api.model.PrivateMine;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.command.CommandMine;
 import games.negative.mines.config.BlockPalletConfiguration;
 import games.negative.mines.config.MineConfiguration;
@@ -58,7 +58,7 @@ public class UPMPlugin extends AluminaPlugin {
     @Override
     public void disable() {
         MineManager mines = api.mines();
-        for (PrivateMine mine : mines.getMines()) {
+        for (Mine mine : mines.getMines()) {
             mines.saveSync(mine);
         }
     }

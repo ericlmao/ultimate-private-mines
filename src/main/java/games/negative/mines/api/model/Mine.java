@@ -1,8 +1,6 @@
 package games.negative.mines.api.model;
 
 import com.google.common.cache.Cache;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import games.negative.alumina.model.Unique;
 import games.negative.alumina.util.ColorUtil;
 import games.negative.mines.UPMPlugin;
@@ -20,7 +18,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface PrivateMine extends Unique {
+public interface Mine extends Unique {
 
     /**
      * Performs the initialization process for the private mine.
