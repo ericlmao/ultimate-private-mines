@@ -13,7 +13,7 @@ public class Perm extends Permission {
     private static final String PREFIX = "upm";
 
     // Add permissions here
-    //public static final Perm ADMIN = new Perm("admin"); // plugin.admin
+    public static final Perm ADMIN = new Perm("admin");
 
     public Perm(@NotNull String name, @Nullable String description, @Nullable PermissionDefault defaultValue, @Nullable Map<String, Boolean> children) {
         super(PREFIX + "." + name, description, defaultValue, children);

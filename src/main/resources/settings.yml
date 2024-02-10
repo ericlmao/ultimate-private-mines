@@ -1,0 +1,4 @@
+# Logger
+# When enabled, the logger will print out all vital and non-vital logs to the console.
+# When disabled, the logger will only print out vital logs to consoles (errors, warnings, etc).
+logger-enabled: true

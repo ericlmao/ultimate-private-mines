@@ -1,5 +1,6 @@
 package games.negative.mines.core;
 
+import games.negative.alumina.logger.Logs;
 import games.negative.alumina.message.Message;
 import games.negative.mines.UPMPlugin;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,39 @@ import java.util.List;
 
 public enum Locale {
 
+    ADMIN_HELP_PROMPT(
+            "&8&m----------------------------------------",
+            "&3&lUPM &8&l| &7Admin Commands",
+            "&8&m----------------------------------------",
+            "&b/upm reload &7- &fReload configurations.",
+            "&8&m----------------------------------------"
+    ),
+
+    RELOAD("&3&lUPM &8> &7Reloaded configurations!"),
+
+    HELP_PROMPT(
+            "&8&m----------------------------------------",
+            "&3&lUltimate Private Mines",
+            "&8&m----------------------------------------",
+            "&b/mine create &7- &fCreate a new Private Mine.",
+            "&b/mine join &7- &fJoin a Private Mine.",
+            "&b/mine leave &7- &fLeave a Private Mine.",
+            "&b/mine visit <player> &7- &fVisit a player's Private Mine.",
+            "&b/mine home &7- &fTravel to your Private Mine",
+            "&b/mine invite <player> &7- &fInvite a player to your Private Mine.",
+            "&b/mine kick <player> &7- &fKick a player from your Private Mine.",
+            "&b/mine disband &7- &fDisband your Private Mine.",
+            "&b/mine vote &7- &fVote for a Private Mine.",
+            "&b/mine setspawn &7- &fSet the spawn of your Private Mine.",
+            "&b/mine list &7- &fList all Private Mines.",
+            "&8&m----------------------------------------"
+    ),
+    MINE_EXISTS("&3&lUPM &8> &7You already have a Private Mine!"),
+
+    MINE_DOES_NOT_EXIST("&3&lUPM &8> &7You do not have a Private Mine!",
+            " &8&l >> &7Create one with &b/mine create&7!"),
+
+    MINE_TELEPORTED("&3&lUPM &8> &7You have been teleported to your Private Mine!"),
     ;
 
     private final String[] defMessage;
@@ -48,26 +82,25 @@ public enum Locale {
         try {
             config.save(file);
         } catch (IOException e) {
-            plugin.getLogger().severe("Could not save messages.yml file!");
+            Logs.SEVERE.print("Could not save messages.yml file!", true);
         }
     }
 
     private static void validateFile(@NotNull UPMPlugin plugin, @NotNull File file) {
         if (!file.exists()) {
             boolean dirSuccess = file.getParentFile().mkdirs();
-            if (dirSuccess) plugin.getLogger().info("Created new plugin directory file!");
+            if (dirSuccess) Logs.INFO.print("Created new plugin directory file!");
 
             try {
                 boolean success = file.createNewFile();
                 if (!success) return;
 
-                plugin.getLogger().info("Created messages.yml file!");
+                Logs.INFO.print("Created messages.yml file!");
             } catch (IOException e) {
-                plugin.getLogger().severe("Could not create messages.yml file!");
+                Logs.SEVERE.print("Could not create messages.yml file!", true);
             }
         }
     }
-
 
     public void send(CommandSender sender) {
         message.send(sender);

@@ -3,13 +3,15 @@ package games.negative.mines;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import games.negative.alumina.AluminaPlugin;
-import games.negative.alumina.command.builder.CommandBuilder;
+import games.negative.alumina.logger.Logs;
 import games.negative.mines.api.MineManager;
 import games.negative.mines.api.UPMApi;
 import games.negative.mines.api.model.Mine;
 import games.negative.mines.command.CommandMine;
+import games.negative.mines.command.CommandUPM;
 import games.negative.mines.config.BlockPalletConfiguration;
 import games.negative.mines.config.MineConfiguration;
+import games.negative.mines.config.SettingsConfiguration;
 import games.negative.mines.core.Locale;
 import games.negative.mines.core.adapter.BukkitWorldTypeAdapter;
 import games.negative.mines.core.adapter.InstantTypeAdapter;
@@ -41,18 +43,17 @@ public class UPMPlugin extends AluminaPlugin {
         // Registering configurations
         new BlockPalletConfiguration();
         new MineConfiguration();
+        new SettingsConfiguration();
         Locale.init(this);
+        Logs.INFO.print("Registered configurations");
         // ------------------------
 
         this.api = new UltimatePrivateMinesAPI(this);
+        Logs.INFO.print("Registered API");
 
-        registerCommand(
-                new CommandBuilder(new CommandMine(this))
-                        .name("mine")
-                        .aliases("pmine", "privatemine")
-                        .description("Main command for Ultimate Private Mines.")
-                        .playerOnly()
-        );
+        registerCommand(new CommandMine(api.mines()));
+        registerCommand(new CommandUPM(this));
+        Logs.INFO.print("Registered commands");
     }
 
     @Override
@@ -61,6 +62,7 @@ public class UPMPlugin extends AluminaPlugin {
         for (Mine mine : mines.getMines()) {
             mines.saveSync(mine);
         }
+        Logs.INFO.print("Saved all mines.", true);
     }
 
     /**

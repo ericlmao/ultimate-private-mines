@@ -1,6 +1,7 @@
 package games.negative.mines.core.util;
 
 import com.google.common.collect.Maps;
+import games.negative.alumina.logger.Logs;
 import games.negative.alumina.util.JsonUtil;
 import games.negative.mines.UPMPlugin;
 import games.negative.mines.api.model.Mine;
@@ -13,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 @UtilityClass
 public class MineLoader {
@@ -37,7 +37,7 @@ public class MineLoader {
 
             Mine mine = loadMine(file);
             if (mine == null) {
-                plugin.getLogger().severe("Failed to load mine " + name + "! Deleting file...");
+                Logs.SEVERE.print("Failed to load mine " + name + "! Deleting file...", true);
                 file.delete();
                 continue;
             }
@@ -65,14 +65,13 @@ public class MineLoader {
         if (!directory.exists()) directory.mkdirs();
 
         UUID uuid = mine.uuid();
-        File file = new File(directory, uuid.toString() + ".json");
+        File file = new File(directory, uuid + ".json");
 
-        Logger logger = plugin.getLogger();
         try {
             JsonUtil.save(mine, file, UPMPlugin.GSON);
-            logger.info("Saved mine " + uuid + "!");
+            Logs.INFO.print("Saved mine " + uuid + "!");
         } catch (IOException e) {
-            logger.severe("Failed to save mine " + uuid + "!");
+            Logs.SEVERE.print("Failed to save mine " + uuid + "!", true);
         }
     }
 

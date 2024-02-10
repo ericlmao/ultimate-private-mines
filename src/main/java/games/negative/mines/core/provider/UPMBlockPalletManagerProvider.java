@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import games.negative.alumina.event.Events;
+import games.negative.alumina.logger.Logs;
 import games.negative.mines.api.BlockPalletManager;
 import games.negative.mines.api.event.ConfigurationReloadEvent;
 import games.negative.mines.api.model.BlockPallet;
@@ -13,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -47,7 +49,10 @@ public class UPMBlockPalletManagerProvider implements BlockPalletManager {
             String rawPermission = section.getString("permission", "upm.pallet." + key.toLowerCase().replaceAll(" ", "-"));
 
             Permission permission = new Permission(rawPermission);
-            Bukkit.getPluginManager().addPermission(permission);
+
+            PluginManager manager = Bukkit.getPluginManager();
+            if (manager.getPermission(permission.getName()) == null)
+                manager.addPermission(permission);
 
             Map<Material, Double> pallet = Maps.newHashMap();
 
@@ -63,6 +68,8 @@ public class UPMBlockPalletManagerProvider implements BlockPalletManager {
 
             BlockPallet blockPallet = new BlockPallet(key, pallet, permission, defaultPallet);
             pallets.add(blockPallet);
+
+            Logs.INFO.print("Loaded block pallet: " + key);
         }
     }
 

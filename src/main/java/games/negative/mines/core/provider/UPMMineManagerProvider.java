@@ -9,15 +9,16 @@ import games.negative.alumina.builder.ItemBuilder;
 import games.negative.alumina.event.Events;
 import games.negative.alumina.future.BukkitCompletableFuture;
 import games.negative.alumina.future.BukkitFuture;
+import games.negative.alumina.logger.Logs;
 import games.negative.alumina.util.NBTEditor;
 import games.negative.alumina.util.Tasks;
 import games.negative.mines.UPMPlugin;
 import games.negative.mines.api.BlockPalletManager;
 import games.negative.mines.api.MineManager;
 import games.negative.mines.api.event.ConfigurationReloadEvent;
+import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.MineRegion;
 import games.negative.mines.api.model.Position;
-import games.negative.mines.api.model.Mine;
 import games.negative.mines.api.model.schematic.PasteSpecifications;
 import games.negative.mines.api.model.schematic.PrivateMineSchematic;
 import games.negative.mines.config.MineConfiguration;
@@ -42,7 +43,6 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class UPMMineManagerProvider implements MineManager {
@@ -82,8 +82,6 @@ public class UPMMineManagerProvider implements MineManager {
                     }
                 });
 
-        Logger logger = plugin.getLogger();
-
         this.world = MineConfiguration.getWorld();
 
         this.GRID_X = new NamespacedKey(plugin, "grid-x");
@@ -91,12 +89,12 @@ public class UPMMineManagerProvider implements MineManager {
 
         if (!NBTEditor.has(world, GRID_X, PersistentDataType.INTEGER)) {
             NBTEditor.set(world, GRID_X, PersistentDataType.INTEGER, 0);
-            logger.info("Created GRID_X key for world " + world.getName());
+            Logs.INFO.print("Created GRID_X key for world " + world.getName());
         }
 
         if (!NBTEditor.has(world, GRID_Z, PersistentDataType.INTEGER)) {
             NBTEditor.set(world, GRID_Z, PersistentDataType.INTEGER, 0);
-            logger.info("Created GRID_Z key for world " + world.getName());
+            Logs.INFO.print("Created GRID_Z key for world " + world.getName());
         }
 
         Events.listen(PlayerTeleportEvent.class, event -> {
@@ -210,6 +208,8 @@ public class UPMMineManagerProvider implements MineManager {
             PasteSpecifications specifications = new UPMPasteSpecifications(pasteY, min, max, spawn);
             PrivateMineSchematic schematic = new UPMSchematic(key, file, def, border, icon, specifications);
             schematics.add(schematic);
+
+            Logs.INFO.print("Loaded Private Mine Schematic: " + key);
         }
     }
 
@@ -272,6 +272,8 @@ public class UPMMineManagerProvider implements MineManager {
 
         mines.put(unique, mine);
 
+        Logs.INFO.print("Create new mine for owner " + owner + " with schematic " + schematic.key() + " with mine-id " + unique);
+
         new MinePasteTask(mine, paste, schematic, plugin).runTaskAsynchronously(plugin);
 
         return mine;
@@ -293,7 +295,7 @@ public class UPMMineManagerProvider implements MineManager {
             Mine mine = cache.get(player.getUniqueId());
             return Optional.of(mine);
         } catch (ExecutionException e) {
-            plugin.getLogger().severe("Failed to get mine for player " + player.getName());
+            Logs.WARNING.print("Could not find mine for player " + player.getName());
             return Optional.empty();
         }
     }

@@ -336,12 +336,12 @@ public class UPMMine implements Mine {
 
     @Override
     public boolean locked() {
-        return false;
+        return locked;
     }
 
     @Override
     public void setLocked(boolean locked) {
-
+        this.locked = locked;
     }
 
     @Override
