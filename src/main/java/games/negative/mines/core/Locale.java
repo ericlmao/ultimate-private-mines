@@ -47,6 +47,11 @@ public enum Locale {
             " &8&l >> &7Create one with &b/mine create&7!"),
 
     MINE_TELEPORTED("&3&lUPM &8> &7You have been teleported to your Private Mine!"),
+
+    MINE_CREATING("&3&lUPM &8> &7Creating your Private Mine..."),
+
+    MINE_CREATED("&3&lUPM &8> &7Your Private Mine has been created! (Took &b%time%&7)",
+            " &8&l >> &7Visit your mine with &b/mine home&7!"),
     ;
 
     private final String[] defMessage;
