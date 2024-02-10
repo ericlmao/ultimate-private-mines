@@ -2,6 +2,7 @@ package games.negative.mines.task;
 
 import games.negative.alumina.util.TimeUtil;
 import games.negative.mines.api.model.Mine;
+import games.negative.mines.core.Locale;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,7 +27,6 @@ public class MinePasteEndTask extends BukkitRunnable {
         }
 
         String time = TimeUtil.format(total, true);
-
-        player.sendMessage("§aYour mine has been pasted (took " + time + ")§a.");
+        Locale.MINE_CREATED.replace("%time%", time).send(player);
     }
 }
