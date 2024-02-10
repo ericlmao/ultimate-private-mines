@@ -7,6 +7,7 @@ import games.negative.mines.api.MineManager;
 import games.negative.mines.api.model.Mine;
 import games.negative.mines.core.Locale;
 import games.negative.mines.ui.ControlPanelMenu;
+import games.negative.mines.ui.create.MineCreateSchematicOptionMenu;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +46,7 @@ public class CommandMine extends Command {
                 return;
             }
 
-            //todo: Open Mine Creation Menu
-            player.sendMessage("Create Mine Menu");
+            new MineCreateSchematicOptionMenu(mines).open(player);
         });
 
         // /mine home
